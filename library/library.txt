@@ -1,0 +1,93 @@
+#!/bin/bash
+
+file="library.txt"
+touch $file
+
+while true
+do
+    echo "------ Library Management ------"
+    echo "1. Add Book"
+    echo "2. Display Books"
+    echo "3. Search Book"
+    echo "4. Delete Book"
+    echo "5. Update Book"
+    echo "6. Exit"
+    echo "Enter your choice:"
+    read choice
+
+    case $choice in
+        1)
+            echo "Enter Book ID:"
+            read id
+
+            # Duplicate check
+            if grep -q "^$id|" $file; then
+                echo "Book ID already exists!"
+            else
+                echo "Enter Book Name:"
+                read name
+                echo "Enter Author Name:"
+                read author
+                echo "Enter Quantity:"
+                read qty
+
+                echo "$id|$name|$author|$qty" >> $file
+                echo "Book Added Successfully!"
+            fi
+            ;;
+
+        2)
+            echo "Library Records:"
+            cat $file
+            ;;
+
+        3)
+            echo "Enter Book ID to search:"
+            read sid
+            if grep -q "^$sid|" $file; then
+                grep "^$sid|" $file
+            else
+                echo "Record not found!"
+            fi
+            ;;
+
+        4)
+            echo "Enter Book ID to delete:"
+            read did
+            if grep -q "^$did|" $file; then
+                grep -v "^$did|" $file > temp.txt
+                mv temp.txt $file
+                echo "Record Deleted!"
+            else
+                echo "Record not found!"
+            fi
+            ;;
+
+        5)
+            echo "Enter Book ID to update:"
+            read uid
+            if grep -q "^$uid|" $file; then
+                echo "Enter new Book Name:"
+                read newname
+                echo "Enter new Author:"
+                read newauthor
+                echo "Enter new Quantity:"
+                read newqty
+
+                sed -i "/^$uid|/c\\$uid|$newname|$newauthor|$newqty" $file
+                echo "Record Updated!"
+            else
+                echo "Record not found!"
+            fi
+            ;;
+
+        6)
+            echo "Exiting..."
+            break
+            ;;
+
+        *)
+            echo "Invalid Choice!"
+            ;;
+    esac
+done
