@@ -1,47 +1,48 @@
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 
-void sort(int arr[], int n) {
-    for(int i=0;i<n-1;i++) {
-        for(int j=0;j<n-i-1;j++) {
-            if(arr[j] > arr[j+1]) {
-                int temp = arr[j];
-                arr[j] = arr[j+1];
-                arr[j+1] = temp;
-            }
-        }
+// Binary Search
+int binarySearch(int arr[], int n, int key) {
+    int low = 0, high = n - 1;
+
+    while(low <= high) {
+        int mid = (low + high) / 2;
+
+        if(arr[mid] == key)
+            return mid;
+        else if(arr[mid] < key)
+            low = mid + 1;
+        else
+            high = mid - 1;
     }
+
+    return -1;
 }
 
-int main() {
-    int n;
-    printf("Enter size: ");
-    scanf("%d", &n);
-
+int main(int argc, char *argv[]) {
+    int n = argc - 2;  // last argument is key
     int arr[n];
-    printf("Enter elements:\n");
-    for(int i=0;i<n;i++)
-        scanf("%d", &arr[i]);
 
-    sort(arr, n);
-
-    int pid = fork();
-
-    if(pid == 0) {
-        char *args[n+2];
-
-        args[0] = "./child";
-
-        for(int i=0;i<n;i++) {
-            args[i+1] = (char*)malloc(10);
-            sprintf(args[i+1], "%d", arr[i]);
-        }
-
-        args[n+1] = NULL;
-
-        execve("./child", args, NULL);
+    // Convert arguments to integers
+    for(int i = 0; i < n; i++) {
+        arr[i] = atoi(argv[i + 1]);
     }
+
+    int key = atoi(argv[argc - 1]);
+
+    printf("\nSorted array received: ");
+    for(int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+
+    printf("\nSearching for: %d\n", key);
+
+    int result = binarySearch(arr, n, key);
+
+    if(result != -1)
+        printf("Element found at index %d\n", result);
+    else
+        printf("Element not found\n");
 
     return 0;
 }
